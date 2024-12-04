@@ -1,0 +1,78 @@
+USE CBZhotels;
+
+
+CREATE TABLE Guests (
+    GuestID INT AUTO_INCREMENT PRIMARY KEY,  
+    FirstName VARCHAR(50) NOT NULL,          
+    LastName VARCHAR(50) NOT NULL,           
+    PhoneNumber VARCHAR(20) NOT NULL,       
+    Address VARCHAR(100) NOT NULL,          
+    Email VARCHAR(50) NOT NULL,              
+    Notes TEXT                               
+);
+CREATE TABLE Bookings (
+    BookingID INT AUTO_INCREMENT PRIMARY KEY, 
+    GuestID INT NOT NULL,                      
+    HotelID INT NOT NULL,                      
+    RoomID INT NOT NULL,                       
+    StartDate DATE NOT NULL,                  
+    EndDate DATE NOT NULL,                     
+    OnlineBooking BOOLEAN DEFAULT FALSE,       
+    FDMMember BOOLEAN DEFAULT FALSE,           
+    DiscountPercentage DECIMAL(5, 2) AS (
+        CASE
+            WHEN OnlineBooking THEN 10
+            WHEN FDMMember THEN 12
+            ELSE 0
+        END
+    ), 
+    FOREIGN KEY (GuestID) REFERENCES Guests(GuestID) ON DELETE CASCADE,
+    FOREIGN KEY (HotelID) REFERENCES Hotels(HotelID) ON DELETE CASCADE,
+    FOREIGN KEY (RoomID) REFERENCES Rooms(RoomID) ON DELETE CASCADE
+);
+CREATE TABLE HotelStaff (
+    StaffID INT AUTO_INCREMENT PRIMARY KEY,    
+    HotelID INT NOT NULL,                      
+    Name VARCHAR(100) NOT NULL,                
+    Role ENUM('Housekeeping', 'Management', 'Reception', 'Kitchen') NOT NULL, 
+    FOREIGN KEY (HotelID) REFERENCES Hotels(HotelID) ON DELETE CASCADE
+);
+CREATE TABLE ConferenceBookings (
+    ConferenceID INT AUTO_INCREMENT PRIMARY KEY, 
+    HotelID INT NOT NULL,                        
+    GuestID INT NOT NULL,                        
+    Equipment TEXT,                              
+    GuestCount INT NOT NULL,                     
+    SpecialRequests TEXT,                        
+    StartDate DATE NOT NULL,                     
+    EndDate DATE NOT NULL,                       
+    Catering TEXT,                               
+    FOREIGN KEY (HotelID) REFERENCES Hotels(HotelID) ON DELETE CASCADE,
+    FOREIGN KEY (GuestID) REFERENCES Guests(GuestID) ON DELETE CASCADE
+);
+CREATE TABLE BikeRentals (
+    RentalID INT AUTO_INCREMENT PRIMARY KEY,
+    GuestID INT NOT NULL,                     
+    BikeType ENUM('Electric', 'Cargo') NOT NULL, 
+    LockCode VARCHAR(10) NOT NULL,
+    RentalDate DATE NOT NULL,                   
+    ReturnDate DATE,                            
+    FOREIGN KEY (GuestID) REFERENCES Guests(GuestID) ON DELETE CASCADE
+);
+INSERT INTO HotelStaff (HotelID, Name, Role) VALUES
+    (1, 'John Doe', 'Housekeeping'),
+    (1, 'Jane Doe', 'Management'),
+    (1, 'Michael Smith', 'Reception'),
+    (1, 'Sarah Johnson', 'Kitchen'),
+    (2, 'Emily Brown', 'Housekeeping'),
+    (2, 'William Wilson', 'Management'),
+    (2, 'David Jones', 'Reception'),
+    (2, 'Sophia Garcia', 'Kitchen');
+
+INSERT INTO ConferenceBookings (HotelID, GuestID, Equipment, GuestCount, SpecialRequests, StartDate, EndDate, Catering)
+VALUES
+    (1, 1, 'Projector, Whiteboard', 20, 'Accessible seating', '2024-12-10', '2024-12-12', 'Lunch, Coffee Breaks');
+
+INSERT INTO BikeRentals (GuestID, BikeType, LockCode, RentalDate)
+VALUES
+    (1, 'Electric', 'E12345', '2024-12-10');
