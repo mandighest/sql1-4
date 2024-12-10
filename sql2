@@ -2,6 +2,8 @@ USE CBZhotels;
 
 DROP TABLE IF EXISTS `Bookings`;
 DROP TABLE IF EXISTS `HotelStaff`;
+DROP TABLE IF EXISTS `ConferenceBookings`;
+DROP TABLE IF EXISTS `BikeRentals`;
 
 CREATE TABLE Guests (
     GuestID INT AUTO_INCREMENT PRIMARY KEY,  
